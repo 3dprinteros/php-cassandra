@@ -8,8 +8,9 @@ class Double extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value){
-		if (!is_double($value))
-			throw new Exception('Incoming value must be of type double.');
+        if (!is_null($value)) {
+            $value = doubleval($value);
+        }
 	
 		$this->_value = $value;
 	}

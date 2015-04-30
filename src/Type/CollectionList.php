@@ -16,8 +16,10 @@ class CollectionList extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value, $valueType) {
-		if (!is_array($value))
-			throw new Exception('Incoming value must be of type array.');
+        if (is_null($value)) {
+            $value = [];
+        } elseif (!is_array($value))
+            throw new Exception('Incoming value must be of type array.');
 		
 		$this->_value = $value;
 		$this->_valueType = $valueType;

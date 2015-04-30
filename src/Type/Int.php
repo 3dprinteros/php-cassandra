@@ -8,9 +8,6 @@ class Int extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value){
-		if (!is_numeric($value))
-			throw new Exception('Incoming value must be of type int.');
-	
 		$this->_value = (int) $value;
 	}
 	

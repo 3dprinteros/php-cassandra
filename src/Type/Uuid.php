@@ -8,9 +8,8 @@ class Uuid extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value){
-		if (!is_string($value))
-			throw new Exception('Incoming value must be of type string.');
-	
+        $value = (string)$value;
+
 		$this->_value = $value;
 	}
 	

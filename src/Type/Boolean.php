@@ -8,10 +8,7 @@ class Boolean extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value){
-		if (!is_bool($value))
-			throw new Exception('Incoming value must be of type boolean.');
-
-		$this->_value = $value;
+		$this->_value = boolval($value);
 	}
 	
 	public function getBinary(){

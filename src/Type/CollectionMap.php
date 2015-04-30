@@ -21,7 +21,9 @@ class CollectionMap extends Base{
 	 * @throws Exception
 	 */
 	public function __construct($value, $keyType, $valueType) {
-		if (!is_array($value))
+        if (is_null($value)) {
+            $value = [];
+        } elseif (!is_array($value))
 			throw new Exception('Incoming value must be of type array.');
 		
 		$this->_value = $value;
