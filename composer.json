@@ -1,5 +1,5 @@
 {
-	"name": "duoshuo/php-cassandra",
+	"name": "KMVPrograms/php-cassandra",
 	"description": "Cassandra client library for PHP, which support Protocol v3 and asynchronous request",
 	"minimum-stability": "stable",
 	"keywords" : [
