@@ -10,10 +10,10 @@ class PhpFloat extends Base{
         if ($value === null)
             return;
         
-        if (!is_double($value))
-            throw new Exception('Incoming value must be type of double.');
+//        if (!is_double($value))
+//            throw new Exception('Incoming value must be type of double.');
     
-        $this->_value = $value;
+        $this->_value = doubleval($value);
     }
     
     public static function binary($value){

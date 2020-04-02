@@ -11,10 +11,10 @@ class PhpInt extends Base{
         if ($value === null)
             return;
         
-        if (!is_numeric($value))
-            throw new Exception('Incoming value must be type of int.');
+//        if (!is_numeric($value))
+//            throw new Exception('Incoming value must be type of int.');
     
-        $this->_value = (int) $value;
+        $this->_value = intval($value);
     }
     
     public static function binary($value){
