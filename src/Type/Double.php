@@ -3,19 +3,29 @@ namespace Cassandra\Type;
 
 class Double extends Base{
 
-	/**
-	 * @param double $value
-	 * @throws Exception
-	 */
-	public function __construct($value){
-        if (!is_null($value)) {
-            $value = doubleval($value);
-        }
-	
-		$this->_value = $value;
-	}
-	
-	public function getBinary(){
-		return strrev(pack('d', $this->_value));
-	}
+    /**
+     * @param double $value
+     * @throws Exception
+     */
+    public function __construct($value = null){
+        if ($value === null)
+            return;
+
+//        if (!is_double($value))
+//            throw new Exception('Incoming value must be type of double.');
+
+        $this->_value = doubleval($value);
+    }
+
+    public static function binary($value){
+        return strrev(pack('d', $value));
+    }
+
+    /**
+     * @param string $binary
+     * @return int
+     */
+    public static function parse($binary){
+        return unpack('d', strrev($binary))[1];
+    }
 }

@@ -3,19 +3,25 @@ namespace Cassandra\Type;
 
 class Inet extends Base{
 
-	/**
-	 * @param string $value
-	 * @throws Exception
-	 */
-	public function __construct($value){
-        if (!is_null($value)) {
-            $value = (string)$value;
-        }
-		
-		$this->_value = $value;
-	}
-	
-	public function getBinary(){
-		return inet_pton($this->_value);
-	}
+    /**
+     * @param string $value
+     * @throws Exception
+     */
+    public function __construct($value = null){
+        if ($value === null)
+            return;
+
+//        if (!is_string($value))
+//            throw new Exception('Incoming value must be type of string.');
+
+        $this->_value = (string)$value;
+    }
+
+    public static function binary($value){
+        return inet_pton($value);
+    }
+
+    public static function parse($binary){
+        return inet_ntop($binary);
+    }
 }

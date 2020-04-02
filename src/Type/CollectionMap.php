@@ -2,43 +2,48 @@
 namespace Cassandra\Type;
 
 class CollectionMap extends Base{
-	/**
-	 * 
-	 * @var int|array
-	 */
-	protected $_keyType;
-	
-	/**
-	 * 
-	 * @var int|array
-	 */
-	protected $_valueType;
-	
-	/**
-	 * @param array $value
-	 * @param int|array $keyType
-	 * @param int|array $valueType
-	 * @throws Exception
-	 */
-	public function __construct($value, $keyType, $valueType) {
-        if (is_null($value)) {
-            $value = [];
-        } elseif (!is_array($value))
-			throw new Exception('Incoming value must be of type array.');
-		
-		$this->_value = $value;
-		$this->_keyType = $keyType;
-		$this->_valueType = $valueType;
-	}
-	
-	public function getBinary(){
-		$data = pack('N', count($this->_value));
-		foreach($this->_value as $key => $value) {
-			$keyPacked = Base::getTypeObject($this->_keyType, $key)->getBinary();
-			$data .= pack('N', strlen($keyPacked)) . $keyPacked;
-			$valuePacked = Base::getTypeObject($this->_valueType, $value)->getBinary();
-			$data .= pack('N', strlen($valuePacked)) . $valuePacked;
-		}
-		return $data;
-	}
+
+    /**
+     * @param array $value
+     * @param array $definition
+     * @throws Exception
+     */
+    public function __construct($value, array $definition) {
+        $this->_definition = $definition;
+        if ($value === null)
+            return;
+
+        if (!is_array($value))
+            throw new Exception('Incoming value must be type of array.');
+
+        $this->_value = $value;
+    }
+
+    /**
+     *
+     * @param array $value
+     * @param array $definition [$keyType, $valueType]
+     * @return string
+     */
+    public static function binary($value, array $definition){
+        list($keyType, $valueType) = $definition;
+        $binary = pack('N', count($value));
+        foreach($value as $key => $val) {
+            $keyPacked = $key instanceof Base
+                ? $key->getBinary()
+                : Base::getBinaryByType($keyType, $key);
+
+            $valuePacked = $val instanceof Base
+                ? $val->getBinary()
+                : Base::getBinaryByType($valueType, $val);
+
+            $binary .= pack('N', strlen($keyPacked)) . $keyPacked;
+            $binary .= pack('N', strlen($valuePacked)) . $valuePacked;
+        }
+        return $binary;
+    }
+
+    public static function parse($binary, array $definition){
+        return (new \Cassandra\Response\StreamReader($binary))->readMap($definition);
+    }
 }

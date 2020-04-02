@@ -2,35 +2,36 @@
 namespace Cassandra\Type;
 
 class CollectionList extends Base{
-	
-	/**
-	 * 
-	 * @var int|array
-	 */
-	protected $_valueType;
-	
-	/**
-	 * 
-	 * @param array $value
-	 * @param int|array $valueType
-	 * @throws Exception
-	 */
-	public function __construct($value, $valueType) {
-        if (is_null($value)) {
-            $value = [];
-        } elseif (!is_array($value))
-            throw new Exception('Incoming value must be of type array.');
-		
-		$this->_value = $value;
-		$this->_valueType = $valueType;
-	}
-	
-	public function getBinary(){
-		$data = pack('N', count($this->_value));
-		foreach($this->_value as $value) {
-			$itemPacked = Base::getTypeObject($this->_valueType, $value)->getBinary();
-			$data .= pack('N', strlen($itemPacked)) . $itemPacked;
-		}
-		return $data;
-	}
+
+    /**
+     *
+     * @param array $value
+     * @param array $definition
+     * @throws Exception
+     */
+    public function __construct($value, array $definition) {
+        $this->_definition = $definition;
+
+        if ($value === null)
+            return;
+
+        if (!is_array($value))
+            throw new Exception('Incoming value must be type of array.');
+
+        $this->_value = $value;
+    }
+
+    public static function binary($value, array $definition){
+        $binary = pack('N', count($value));
+        list($valueType) = $definition;
+        foreach($value as $val) {
+            $itemPacked = Base::getBinaryByType($valueType, $val);
+            $binary .= pack('N', strlen($itemPacked)) . $itemPacked;
+        }
+        return $binary;
+    }
+
+    public static function parse($binary, array $definition){
+        return (new \Cassandra\Response\StreamReader($binary))->readList($definition);
+    }
 }

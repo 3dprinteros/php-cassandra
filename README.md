@@ -25,6 +25,8 @@ Cassandra client library for PHP, which support Protocol v3 (Cassandra 2.1) and 
 
 PHP 5.4+ is required. There is no need for additional libraries.
 
+If you want to use Bigint or Timestamp type, 64-bit system is required.
+
 Append dependency into composer.json
 
 ```
@@ -63,7 +65,7 @@ $nodes = [
 		'username'	=> 'admin',
 		'password'	=> 'pass',
 		'class'		=> 'Cassandra\Connection\Stream',//use stream instead of socket, default socket. Stream may not work in some environment
-		'connectTimeout => 10, // connection timeout, default 5,  stream transport only
+		'connectTimeout' => 10, // connection timeout, default 5,  stream transport only
 		'timeout'	=> 30, // write/recv timeout, default 30, stream transport only
 		'persistent'	=> true, // use persistent PHP connection, default false,  stream transport only  
 	],
@@ -220,28 +222,28 @@ All types are supported.
     new Cassandra\Type\Counter(1000);
 
 //  Decimal
-    new Cassandra\Type\Decimal(123, 4); 	// 0.0123
+    new Cassandra\Type\Decimal('0.0123');
 
 //  Double
     new Cassandra\Type\Double(2.718281828459);
 
 //  Float
-    new Cassandra\Type\Float(2.718);
+    new Cassandra\Type\PhpFloat(2.718);
 
 //  Inet
     new Cassandra\Type\Inet('127.0.0.1');
 
 //  Int
-    new Cassandra\Type\Int(1);
+    new Cassandra\Type\PhpInt(1);
 
 //  CollectionList
-    new Cassandra\Type\CollectionList([1, 1, 1], Cassandra\Type\Base::INT);
+    new Cassandra\Type\CollectionList([1, 1, 1], [Cassandra\Type\Base::INT]);
 
 //  CollectionMap
-    new Cassandra\Type\CollectionMap(['a' => 1, 'b' => 2], Cassandra\Type\Base::ASCII, Cassandra\Type\Base::INT);
+    new Cassandra\Type\CollectionMap(['a' => 1, 'b' => 2], [Cassandra\Type\Base::ASCII, Cassandra\Type\Base::INT]);
 
 //  CollectionSet
-    new Cassandra\Type\CollectionSet([1, 2, 3], Cassandra\Type\Base::INT);
+    new Cassandra\Type\CollectionSet([1, 2, 3], [Cassandra\Type\Base::INT]);
 
 //  Timestamp (unit: millisecond)
     new Cassandra\Type\Timestamp((int) (microtime(true) * 1000));
@@ -260,13 +262,13 @@ All types are supported.
     new Cassandra\Type\Varint(10000000000);
 
 //  Custom
-    new Cassandra\Type\Custom('string');
+    new Cassandra\Type\Custom('string', 'var_name');
 
 //  Tuple
-    new Cassandra\Type\Tuple([1, '2'], [Cassandra\Type\Base::INT, Cassandra\Type\Base::TEXT]);
+    new Cassandra\Type\Tuple([1, '2'], [Cassandra\Type\Base::INT, Cassandra\Type\Base::VARCHAR]);
 
 //  UDT
-    new Cassandra\Type\UDT(['intField' => 1, 'textField' => '2'], ['intField' => Cassandra\Type\Base::INT, 'textField' => Cassandra\Type\Base::TEXT]); 	// in the order defined by the type
+    new Cassandra\Type\UDT(['intField' => 1, 'textField' => '2'], ['intField' => Cassandra\Type\Base::INT, 'textField' => Cassandra\Type\Base::VARCHAR]); 	// in the order defined by the type
 ```
 
 ## Using nested datatypes
@@ -288,14 +290,15 @@ new Cassandra\Type\CollectionSet([
 		'drinks' => []
 	]
 ], [
+	[
 	'type' => Cassandra\Type\Base::UDT,
-	'typeMap' => [
+	'definition' => [
 		'id' => Cassandra\Type\Base::INT,
-		'name' => Cassandra\Type\Base::TEXT,
+		'name' => Cassandra\Type\Base::VARCHAR,
 		'active' => Cassandra\Type\Base::BOOLEAN,
 		'friends' => [
 			'type' => Cassandra\Type\Base::COLLECTION_LIST,
-			'value' => Cassandra\Type\Base::TEXT
+			'value' => Cassandra\Type\Base::VARCHAR
 		],
 		'drinks' => [
 			'type' => Cassandra\Type\Base::COLLECTION_LIST,
@@ -303,11 +306,12 @@ new Cassandra\Type\CollectionSet([
 				'type' => Cassandra\Type\Base::UDT,
 				'typeMap' => [
 					'qty' => Cassandra\Type\Base::INT,
-					'brand' => Cassandra\Type\Base::TEXT
+					'brand' => Cassandra\Type\Base::VARCHAR
 				]
 			]
 		]
 	]
+]
 ]);
 ```
 

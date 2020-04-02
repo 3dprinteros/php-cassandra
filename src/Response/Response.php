@@ -3,22 +3,25 @@ namespace Cassandra\Response;
 use Cassandra\Protocol\Frame;
 
 class Response implements Frame{
-	use StreamReader;
-	
 	/**
 	 * @var array
 	 */
 	protected $_header;
+
+	/**
+	 * @var
+	 */
+	protected $_stream;
 	
 	/**
 	 * 
 	 * @param array $header
-	 * @param $body
+	 * @param $stream
 	 */
-	public function __construct($header, $body){
+	public function __construct($header, $stream){
 		$this->_header = $header;
 		
-		$this->data = $body;
+		$this->_stream = $stream;
 	}
 	
 	public function getVersion(){
@@ -38,6 +41,6 @@ class Response implements Frame{
 	}
 	
 	public function getBody(){
-		return $this->data;
+		return $this->_stream;
 	}
 }
